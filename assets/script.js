@@ -4,33 +4,44 @@ var $searchBtn = $('#search-btn')
 var $inputCity = $('#citySearch')
 var $currentDayCard = $('#current-day')
 var $fiveDayCard = $('#five-day-forecast')
-
 var cityName;
-var testdata;
-var searchHistory = ["New+York", "Lake+Charles", "Denmark", "London"];
+//populates search history with prevs search in local storage, or if no local storage populates with list of 10 most populus cities in the world
+var searchHistory = JSON.parse(localStorage.getItem('savedHistory')) || ['Tokyo', 'Delhi', 'Shanghai', 'São Paulo', 'Mexico City', 'Cairo', 'Mumbai', 'Beijing', 'Dhaka', 'Osaka']; 
 
 var cTemp; var cHumidity; var cWindSpeed; var cIcon; var cUVI; //inti current day data vars on global scale
 var fTemp = []; var fHumidity = []; var fIcon = []; //inti forceast data vars on global scale
 
-// used current api for current weather and get lat & lon data from it
-// use onecall api for uv data and 5 day forecast 
-
 function init() {
-    searchHistory.forEach(item => $searchHistory.append(`<li class='list-group-item'>${item}</li>`));
-    $searchBtn.click( function(){
-        searchHistory.push($inputCity.val());
-        getData($inputCity.val());
-        $searchHistory.append(`<li class='list-group-item'>${$inputCity.val()}</li>`);
+    popSearchHistory(); //adds the previous search results onto the screen on load 
+    $searchBtn.click( function(){ //sets up functionality of search button
+        cityName = capFirstLetter($inputCity.val());
+        addToSearchHistory();
+        getData(cityName);
+        popSearchHistory();
         $inputCity.val(''); //clear input after search
     })
-    $searchHistory.on('click', 'li', function(){
+    $searchHistory.on('click', 'li', function(){ //sets up functionality of search history list 
         getData(this.textContent)
     })
 }
 
+function addToSearchHistory(){
+    if(!(searchHistory.includes(cityName))){ //prevents duplicates in search history bar
+        searchHistory.splice(0,0,cityName);
+        searchHistory = searchHistory.splice(0,10);
+        localStorage.setItem('savedHistory', JSON.stringify(searchHistory));
+    }
+}
+
+function popSearchHistory(){
+    $searchHistory.empty();
+    searchHistory.forEach(item => $searchHistory.append(`<li class='list-group-item'>${item}</li>`));
+}
+
 function getData(city){
     cityName = city;
-    var currentURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=imperial&appid=${apiKey}`;
+    formattedCity = formatCityName(city);
+    var currentURL = `https://api.openweathermap.org/data/2.5/weather?q=${formattedCity}&units=imperial&appid=${apiKey}`;
     fetch(currentURL)
         .then(function(response){
             return response.json();
@@ -48,7 +59,6 @@ function getData(city){
                     return response2.json();
                 })
                 .then(function (oData){
-                    testdata = oData;
                     fTemp = []; fHumidity = []; fIcon = []; // empty out forecast arrays before adding new data to them
                     cUVI = oData.current.uvi;
                     for( i=1; i < 6; i++){
@@ -61,10 +71,21 @@ function getData(city){
         })
 }
 
+function formatCityName(city){
+    var formatted = city.split(' ').join('+');
+    return formatted;
+}
+
+function capFirstLetter(word){
+    return word.split(' ').map(w => w[0].toUpperCase() + w.substr(1)).join(' ');
+}
+
 function populateFields(){
+    var date = new Date();
+    displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'})
     $currentDayCard.empty();
     $currentDayCard.append(`<div class="card-body">
-    <h3 class="card-title">${cityName} (3/8/2021) ☁️</h3>
+    <h3 class="card-title">${cityName} ${displayDate} ☁️</h3>
     <p class="card-text">Temperature: ${cTemp}°F</p>
     <p class="card-text">Humidity: ${cHumidity}%</p>
     <p class="card-text">Wind Speed: ${cWindSpeed} MPH</p>
@@ -73,9 +94,11 @@ function populateFields(){
 
     $fiveDayCard.empty();
     for (let i = 0; i < fTemp.length; i++) {
+        date.setDate(date.getDate()+1);
+        displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'})
         $fiveDayCard.append(`<div class="card">
                             <div class="card-body">
-                            <h3 class="card-title">3/9/2021</h3>
+                            <h3 class="card-title">${displayDate}</h3>
                             <h4>☁️</h4>
                             <p class="card-text">Temperature: ${fTemp[i]}°F</p>
                             <p class="card-text">Humidity: ${fHumidity[i]}%</p>
