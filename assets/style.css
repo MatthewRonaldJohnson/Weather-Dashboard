@@ -22,3 +22,8 @@
     padding: 10px;
     color: white;
 }
+
+.custom-card {
+    background-color: lightblue;
+    margin: 10px;
+}

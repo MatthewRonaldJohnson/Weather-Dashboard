@@ -111,7 +111,7 @@ function populateFields(){
     for (let i = 0; i < fTemp.length; i++) {
         date.setDate(date.getDate()+1);
         displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'})
-        $fiveDayCard.append(`<div class="card">
+        $fiveDayCard.append(`<div class="card custom-card">
                             <div class="card-body">
                             <h3 class="card-title">${displayDate}</h3>
                             <h4>☁️</h4>
