@@ -1,4 +1,4 @@
-const apiKey = 'b40a49b598146847ec7cdb4601c0bec0';
+const apiKey = 'b40a49b598146847ec7cdb4601c0bec0'; //planning to deactivate this key once the assignment has been graded 
 var $searchHistory = $('#search-history');
 var $searchBtn = $('#search-btn');
 var $inputCity = $('#citySearch');
@@ -12,7 +12,6 @@ var cTemp; var cHumidity; var cWindSpeed; var cIcon; var cUVI; var dangerLevel; 
 var fTemp = []; var fHumidity = []; var fIcon = []; //inti forceast data vars on global scale
 
 function init() {
-    popSearchHistory(); //adds the previous search results onto the screen on load 
     getData(searchHistory[0]);
     $('form').submit(function(e){ //sets up functionality of search button
         e.preventDefault();
@@ -52,14 +51,14 @@ function getData(city){
             return response.json();
         })
         .then(function (cData){
+            //check that data for a city came back, if not end the function and alter the user
             if (cData.cod === '404'){
-                alert("Error, city not found. Type in city name by itself (no state or country). Check your spelling.");
+                alert("Error, city not found. Type in city name by itself (no state or country) and check your spelling.");
                 return;
             }
-            addToSearchHistory();
+            addToSearchHistory(); //once we've gotten data back we know the city name entered is good, so we can add it to the search history
             popSearchHistory();
-            console.log(cData);
-            var lon = cData.coord.lon;
+            var lon = cData.coord.lon; //we need the lat and lon data from the first api call to execute the second 
             var lat = cData.coord.lat;
             cTemp = cData.main.temp;
             cHumidity = cData.main.humidity;
@@ -70,12 +69,12 @@ function getData(city){
                 .then(function(response2){
                     return response2.json();
                 })
-                .then(function (oData){
+                .then(function (oData){ //no guard clause here as we're assuming since the first api call was good that this will be as well (maybe not a great idea?)
                     console.log(oData);
                     cUVI = oData.current.uvi; //get current day UVI data from one call data
                     findDangerLevel(cUVI); //find the right class to apply based on UVI
                     fTemp = []; fHumidity = []; fIcon = []; // empty out forecast arrays before adding new data to them
-                    for( i=1; i < 6; i++){
+                    for( i=1; i < 6; i++){ //since we already have current day data we just want data in indexes 1-5 for the next 5 days
                         fTemp.push(oData.daily[i].temp.day);
                         fHumidity.push(oData.daily[i].humidity);
                         fIcon.push(oData.daily[i].weather[0].icon);
@@ -86,11 +85,11 @@ function getData(city){
 }
 
 function formatCityName(city){
-    var formatted = city.split(' ').join('+');
+    var formatted = city.split(' ').join('+'); //repalces spaces in inputed city names for +, so it can be insereted into the api url
     return formatted;
 }
 
-function findDangerLevel(UVI){
+function findDangerLevel(UVI){ //simple if/else logic to color code UVI risk
     if(UVI >=11){
         dangerLevel = 'extreme';
     } else if (UVI >= 8){
@@ -104,11 +103,15 @@ function findDangerLevel(UVI){
     }
 }
 
-function capFirstLetter(word){
+function capFirstLetter(word){ 
+    //this function makes the first letter in each word uppercase to try and get a uniform display
+    //if user enters something like McDonald, it will not alter the cases of any letters besides the first, this was intentional to correctly dispaly things like McDonald but allows odd user enteries to offer akward displays (such as NEw YoRK)
     return word.split(' ').map(w => w[0].toUpperCase() + w.substr(1)).join(' ');
 }
 
 function populateFields(){
+    //this function populates the current day and forecast cards with data gathered from the apis
+    //makes heavy use of template literals to add lots of html at once 
     var date = new Date();
     displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'});
     $currentDayCard.empty();
