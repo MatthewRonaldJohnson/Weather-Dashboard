@@ -1,0 +1,24 @@
+.low {
+    background-color: green;
+}
+
+.moderate {
+    background-color: yellow;
+}
+
+.high {
+    background-color: orange;
+}
+
+.very-high {
+    background-color: red;
+}
+
+.extreme {
+    background-color: purple;
+}
+
+.label {
+    padding: 10px;
+    color: white;
+}

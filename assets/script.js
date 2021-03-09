@@ -8,7 +8,7 @@ var cityName;
 //populates search history with prevs search in local storage, or if no local storage populates with list of 10 most populus cities in the world
 var searchHistory = JSON.parse(localStorage.getItem('savedHistory')) || ['Tokyo', 'Delhi', 'Shanghai', 'São Paulo', 'Mexico City', 'Cairo', 'Mumbai', 'Beijing', 'Dhaka', 'Osaka']; 
 
-var cTemp; var cHumidity; var cWindSpeed; var cIcon; var cUVI; //inti current day data vars on global scale
+var cTemp; var cHumidity; var cWindSpeed; var cIcon; var cUVI; var dangerLevel; //inti current day data vars on global scale
 var fTemp = []; var fHumidity = []; var fIcon = []; //inti forceast data vars on global scale
 
 function init() {
@@ -59,8 +59,9 @@ function getData(city){
                     return response2.json();
                 })
                 .then(function (oData){
+                    cUVI = oData.current.uvi; //get current day UVI data from one call data
+                    findDangerLevel(cUVI); //find the right class to apply based on UVI
                     fTemp = []; fHumidity = []; fIcon = []; // empty out forecast arrays before adding new data to them
-                    cUVI = oData.current.uvi;
                     for( i=1; i < 6; i++){
                         fTemp.push(oData.daily[i].temp.day);
                         fHumidity.push(oData.daily[i].humidity);
@@ -76,6 +77,20 @@ function formatCityName(city){
     return formatted;
 }
 
+function findDangerLevel(UVI){
+    if(UVI >=11){
+        dangerLevel = 'extreme';
+    } else if (UVI >= 8){
+        dangerLevel = 'very-high';
+    } else if (UVI >= 6){
+        dangerLevel = 'high';
+    } else if (UVI >=3){
+        dangerLevel = 'moderate';
+    } else{
+        dangerLevel = 'low';
+    }
+}
+
 function capFirstLetter(word){
     return word.split(' ').map(w => w[0].toUpperCase() + w.substr(1)).join(' ');
 }
@@ -89,7 +104,7 @@ function populateFields(){
     <p class="card-text">Temperature: ${cTemp}°F</p>
     <p class="card-text">Humidity: ${cHumidity}%</p>
     <p class="card-text">Wind Speed: ${cWindSpeed} MPH</p>
-    <p class="card-text">UV Index: ${cUVI}</p>
+    <p class="card-text">UV Index: <span class="label ${dangerLevel}">${cUVI}</span></p>
     </div>`)
 
     $fiveDayCard.empty();
