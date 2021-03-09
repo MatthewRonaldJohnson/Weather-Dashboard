@@ -21,3 +21,7 @@ Stackoverflow post about formatting city names with spaces for openweathermap [l
 EPA page on UVI Scale [link](https://19january2017snapshot.epa.gov/sunsafety/uv-index-scale-1_.html)
 
 MDN docs on .map() [link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+
+MDN docs on .filter() [link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
+
+MDN docs on spread operator [link](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
