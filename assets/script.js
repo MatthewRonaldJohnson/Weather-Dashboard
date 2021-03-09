@@ -1,9 +1,9 @@
 const apiKey = 'b40a49b598146847ec7cdb4601c0bec0';
 var $searchHistory = $('#search-history');
-var $searchBtn = $('#search-btn')
-var $inputCity = $('#citySearch')
-var $currentDayCard = $('#current-day')
-var $fiveDayCard = $('#five-day-forecast')
+var $searchBtn = $('#search-btn');
+var $inputCity = $('#citySearch');
+var $currentDayCard = $('#current-day');
+var $fiveDayCard = $('#five-day-forecast');
 var cityName;
 //populates search history with prevs search in local storage, or if no local storage populates with list of 10 most populus cities in the world
 var searchHistory = JSON.parse(localStorage.getItem('savedHistory')) || ['Tokyo', 'Delhi', 'Shanghai', 'São Paulo', 'Mexico City', 'Cairo', 'Mumbai', 'Beijing', 'Dhaka', 'Osaka']; 
@@ -13,6 +13,7 @@ var fTemp = []; var fHumidity = []; var fIcon = []; //inti forceast data vars on
 
 function init() {
     popSearchHistory(); //adds the previous search results onto the screen on load 
+    getData(searchHistory[0]);
     $searchBtn.click( function(){ //sets up functionality of search button
         cityName = capFirstLetter($inputCity.val());
         addToSearchHistory();
@@ -20,8 +21,8 @@ function init() {
         popSearchHistory();
         $inputCity.val(''); //clear input after search
     })
-    $searchHistory.on('click', 'li', function(){ //sets up functionality of search history list 
-        getData(this.textContent)
+    $searchHistory.on('click', 'li', function(){ //sets up functionality of search history list
+        getData(this.textContent);
     })
 }
 
@@ -97,7 +98,7 @@ function capFirstLetter(word){
 
 function populateFields(){
     var date = new Date();
-    displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'})
+    displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'});
     $currentDayCard.empty();
     $currentDayCard.append(`<div class="card-body">
     <h3 class="card-title">${cityName} ${displayDate} ☁️</h3>
@@ -105,12 +106,12 @@ function populateFields(){
     <p class="card-text">Humidity: ${cHumidity}%</p>
     <p class="card-text">Wind Speed: ${cWindSpeed} MPH</p>
     <p class="card-text">UV Index: <span class="label ${dangerLevel}">${cUVI}</span></p>
-    </div>`)
+    </div>`);
 
     $fiveDayCard.empty();
     for (let i = 0; i < fTemp.length; i++) {
         date.setDate(date.getDate()+1);
-        displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'})
+        displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'});
         $fiveDayCard.append(`<div class="card custom-card">
                             <div class="card-body">
                             <h3 class="card-title">${displayDate}</h3>
@@ -118,7 +119,7 @@ function populateFields(){
                             <p class="card-text">Temperature: ${fTemp[i]}°F</p>
                             <p class="card-text">Humidity: ${fHumidity[i]}%</p>
                             </div>
-                            </div>`)
+                            </div>`);
     }
 }
 
