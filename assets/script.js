@@ -53,7 +53,7 @@ function getData(city){
         })
         .then(function (cData){
             if (cData.cod === '404'){
-                alert("error");
+                alert("Error, city not found. Type in city name by itself (no state or country). Check your spelling.");
                 return;
             }
             addToSearchHistory();
