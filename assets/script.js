@@ -14,15 +14,19 @@ var fTemp = []; var fHumidity = []; var fIcon = []; //inti forceast data vars on
 function init() {
     popSearchHistory(); //adds the previous search results onto the screen on load 
     getData(searchHistory[0]);
-    $searchBtn.click( function(){ //sets up functionality of search button
+    $('form').submit(function(e){ //sets up functionality of search button
+        e.preventDefault();
         cityName = capFirstLetter($inputCity.val());
-        addToSearchHistory();
         getData(cityName);
-        popSearchHistory();
         $inputCity.val(''); //clear input after search
     })
     $searchHistory.on('click', 'li', function(){ //sets up functionality of search history list
         getData(this.textContent);
+        console.log(this)
+        var test = searchHistory.filter(item => this.textContent != item);
+        console.log(test)
+        searchHistory.length = 0;
+        searchHistory = [this.textContent, ...test];
     })
 }
 
@@ -48,6 +52,13 @@ function getData(city){
             return response.json();
         })
         .then(function (cData){
+            if (cData.cod === '404'){
+                alert("error");
+                return;
+            }
+            addToSearchHistory();
+            popSearchHistory();
+            console.log(cData);
             var lon = cData.coord.lon;
             var lat = cData.coord.lat;
             cTemp = cData.main.temp;
@@ -60,6 +71,7 @@ function getData(city){
                     return response2.json();
                 })
                 .then(function (oData){
+                    console.log(oData);
                     cUVI = oData.current.uvi; //get current day UVI data from one call data
                     findDangerLevel(cUVI); //find the right class to apply based on UVI
                     fTemp = []; fHumidity = []; fIcon = []; // empty out forecast arrays before adding new data to them
@@ -101,7 +113,7 @@ function populateFields(){
     displayDate = date.toLocaleString('en-US',{month: 'numeric', day:'2-digit', year:'numeric'});
     $currentDayCard.empty();
     $currentDayCard.append(`<div class="card-body">
-    <h3 class="card-title">${cityName} ${displayDate} ☁️</h3>
+    <h3 class="card-title">${cityName} ${displayDate} <img class='custom-img' src="http://openweathermap.org/img/wn/${cIcon}@2x.png"></img></h3>
     <p class="card-text">Temperature: ${cTemp}°F</p>
     <p class="card-text">Humidity: ${cHumidity}%</p>
     <p class="card-text">Wind Speed: ${cWindSpeed} MPH</p>
@@ -115,7 +127,7 @@ function populateFields(){
         $fiveDayCard.append(`<div class="card custom-card">
                             <div class="card-body">
                             <h3 class="card-title">${displayDate}</h3>
-                            <h4>☁️</h4>
+                            <img class='custom-img' src="http://openweathermap.org/img/wn/${fIcon[i]}@2x.png"></img>
                             <p class="card-text">Temperature: ${fTemp[i]}°F</p>
                             <p class="card-text">Humidity: ${fHumidity[i]}%</p>
                             </div>
