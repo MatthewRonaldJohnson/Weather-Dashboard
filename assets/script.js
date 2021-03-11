@@ -106,7 +106,8 @@ function findDangerLevel(UVI){ //simple if/else logic to color code UVI risk
 function capFirstLetter(word){ 
     //this function makes the first letter in each word uppercase to try and get a uniform display
     //if user enters something like McDonald, it will not alter the cases of any letters besides the first, this was intentional to correctly dispaly things like McDonald but allows odd user enteries to offer akward displays (such as NEw YoRK)
-    return word.split(' ').map(w => w[0].toUpperCase() + w.substr(1)).join(' ');
+    //added trim to prevent errors if user adds whitespace before or after the city 
+    return word.trim().split(' ').map(w => w[0].toUpperCase() + w.substr(1)).join(' ');
 }
 
 function populateFields(){
