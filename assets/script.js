@@ -90,7 +90,7 @@ function formatCityName(city){
 }
 
 function findDangerLevel(UVI){ //simple if/else logic to color code UVI risk
-    if(UVI >=11){
+    /* if(UVI >=11){
         dangerLevel = 'extreme';
     } else if (UVI >= 8){
         dangerLevel = 'very-high';
@@ -100,7 +100,21 @@ function findDangerLevel(UVI){ //simple if/else logic to color code UVI risk
         dangerLevel = 'moderate';
     } else{
         dangerLevel = 'low';
-    }
+    } */ //base version using if, else if statments
+
+    /* dangerLevel = (UVI >= 11)? 'extreme': (UVI >= 8)? 'very-high':(UVI >= 6)? 'high':(UVI >= 3)? 'moderate': 'low'; */ //same funcationality using ternary operators
+
+    switch(true){
+        case UVI >= 11: dangerLevel = 'extreme'
+            break;
+        case UVI >=8: dangerLevel = 'very-high'
+            break;
+        case UVI >=6: dangerLevel = 'high'
+            break;
+        case UVI >=3: dangerLevel = 'moderate'
+            break;
+        default: dangerLevel = 'low'
+    } //same funcationality using switch cases
 }
 
 function capFirstLetter(word){ 
