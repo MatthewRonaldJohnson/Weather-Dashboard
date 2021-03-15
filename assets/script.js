@@ -33,6 +33,7 @@ function addToSearchHistory(){
     if(!(searchHistory.includes(cityName))){ //prevents duplicates in search history bar
         searchHistory.splice(0,0,cityName);
         searchHistory = searchHistory.splice(0,10);
+        //savedHistory = ['1','2']
         localStorage.setItem('savedHistory', JSON.stringify(searchHistory));
     }
 }
@@ -52,6 +53,7 @@ function getData(city){
         })
         .then(function (cData){
             //check that data for a city came back, if not end the function and alter the user
+            console.log(cData)
             if (cData.cod === '404'){
                 alert("Error, city not found. Type in city name by itself (no state or country) and check your spelling.");
                 return;
